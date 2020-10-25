@@ -1,39 +1,48 @@
 #lang racket
 
-(define (find_S_kolca)
-  (define pi 3.14)
-  (display "Вычисление площади кольца.")
-  (newline)
-  (display "Введите исходные данные:")
-  (display "Радиус кольца (см) => ")
-  (define rKol (read))
-  (display "Радиус отверстия (см) => ")
-  (define rOtv (read))
-  (define S_kolca (- (* pi (* rKol rKol)) (* pi (* rOtv rOtv))))
-  (define (vivod_S_kolca) (display "Площадь кольца: ") (display S_kolca))
-  (if (> rOtv rKol)
-      (display "Ошибка! Радиус отверстия не может быть больше радиуса кольца.") (vivod_S_kolca)))
+(define (is_print_args new_arg)
+       ( if ( null? new_arg )
+            #t
+            ( if ( equal? "'" ( car new_arg ))
+                 ( if ( equal? "'" (car ( cdr new_arg )))
+                      ( is_print_args (cdr (cdr new_arg)))
+                      (begin
+                        (print "expected back-quote ' ")
+                      #f))
+                 ( if ( equal? "," ( car new_arg ))
+                      ( is_print_args (cdr new_arg))
+                      ( if (equal? ")" (car new_arg))
+                          (cdr new_arg)
+                          (begin
+                        (print "expected closing bracket ')' ")
+                      #f)))
+                 )))
+  
+  
+(define (is_print_function new_line)
+  ( if ( null? new_line )
+      #f
+      ( if (and '(car new_line) (equal? "printf" ( car new_line )))
+           ( if (and '(car new_line) ( equal? "(" ( car (cdr new_line ))))
+                (if ( is_print_args ( cdr ( cdr new_line )))
+                             (if (and '(car new_line) ( equal? ";" (car (is_print_args ( cdr ( cdr new_line ))))))
+                                 #t
+                                 (begin
+                        (print "expected ';'")
+                      #f))
+                             (begin
+                        (print "syntax error")
+                      #f))
+                (begin
+                        (print "expected '(' after 'printf'")
+                      #f))
+           (begin
+                        (print "expected 'printf'")
+                      #f))
+      ))
+  
 
-(define (iz_min_v_sec)
-  (define min 60)
-  (display "Введите время (минут. секунд) -> ")
-  (define mins (read))
-  (define find_sec (- mins (round mins)))
-  (define result (+ (* find_sec 100) (* (round mins) min)))
-  (define (vivod) (display "В ") (display mins) (display " минутах ") (display result) (display " секунд."))
-  (if (> find_sec 0.60)
-      (display "Ошибка! Количество секунд не может быть больше 60.") (vivod)))
-
-(define (indef_ves_god)
-  (display "Введите год: ")
-  (newline)
-  (display "=> ")
-  (define year (read))
-  (define (visokos) (display year) (display " год - високосный."))
-  (define (ne_visokos) (display year) (display " год - не високосный."))
-  (define indef_ves (if (= 0 (modulo year 4)) (visokos) (ne_visokos)))
-  indef_ves)
-
-;(find_S_kolca)
-;(iz_min_v_sec)
-(indef_ves_god)
+(is_print_function '("printf" "(" "'" "'" "," "'" "'" ")" ";"))
+(is_print_function '("(" "'" "'" "," "'" "'" ")" ";"))
+(is_print_function '("printf" "(" "'" ")" ";"))
+(is_print_function '("printf" "(" ")" ";"))

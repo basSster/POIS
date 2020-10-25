@@ -46,3 +46,4 @@
 (is_print_function '("(" "'" "'" "," "'" "'" ")" ";"))
 (is_print_function '("printf" "(" "'" ")" ";"))
 (is_print_function '("printf" "(" ")" ";"))
+(is_print_function '("printf" "'" "'" "," "'" "'" ")" ";"))
